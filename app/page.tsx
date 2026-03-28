@@ -12,7 +12,7 @@ export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [taskTitle, setTaskTitle] = useState("");
 
-  // ✅ Fetch all tasks
+  //  Fetch all tasks
   const fetchTasks = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/tasks");
@@ -27,7 +27,7 @@ export default function Home() {
     fetchTasks();
   }, []);
 
-  // ✅ POST - Add Task
+  //  POST - Add Task
   const handleAddTask = async () => {
     if (!taskTitle.trim()) return;
 
@@ -50,7 +50,7 @@ export default function Home() {
     }
   };
 
-  // ✅ PUT - Toggle Task
+  //  PUT - Toggle Task
   const toggleTask = async (id: number) => {
     try {
       await fetch(`http://localhost:8080/api/tasks/${id}`, {
@@ -64,31 +64,41 @@ export default function Home() {
     }
   };
 
+  // DELETE - Delete Task
+  const deleteTask = async (id: number, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering toggleTask when clicking delete button
+    
+    try {
+      await fetch(`http://localhost:8080/api/tasks/${id}`, {
+        method: "DELETE",
+      });
+      fetchTasks(); // refresh list after deletion
+    } catch (err) {
+      console.error("Error deleting task:", err);
+    }
+  };
+
   return (
-    <main >
+    <main>
       <h1>Task Manager</h1>
 
-      {/* ✅ Input */}
-      <div >
+      {/*  Input */}
+      <div>
         <input
           type="text"
           placeholder="Enter task..."
           value={taskTitle}
           onChange={(e) => setTaskTitle(e.target.value)}
-          
         />
         <button onClick={handleAddTask}>Add Task</button>
       </div>
 
-      {/* ✅ Task List */}
+      {/*  Task List */}
       <ul>
         {tasks.map((task) => (
-          <li
-            key={task.id}
-            onClick={() => toggleTask(task.id)}
-         
-          >
+          <li key={task.id} onClick={() => toggleTask(task.id)}>
             {task.title}
+            <button onClick={(e) => deleteTask(task.id, e)}>Delete</button>
           </li>
         ))}
       </ul>
