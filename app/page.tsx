@@ -11,6 +11,7 @@ type Task = {
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [taskTitle, setTaskTitle] = useState("");
+  const [filter, setFilter] = useState("ALL");
 
   //  Fetch all tasks
   const fetchTasks = async () => {
@@ -78,9 +79,31 @@ export default function Home() {
     }
   };
 
+  // Calculate completed tasks count
+  const completedCount = tasks.filter(t => t.completed).length;
+
+  // Filter tasks based on selected filter
+  const filteredTasks = tasks.filter(task => {
+    if (filter === "COMPLETED") return task.completed;
+    if (filter === "PENDING") return !task.completed;
+    return true; // "ALL" - return all tasks
+  });
+
   return (
     <main>
       <h1>Task Manager</h1>
+
+      {/* Task Counter */}
+      <p>
+        {completedCount} / {tasks.length} completed
+      </p>
+
+      {/* Filter Buttons */}
+      <div>
+        <button onClick={() => setFilter("ALL")}>All</button>
+        <button onClick={() => setFilter("COMPLETED")}>Completed</button>
+        <button onClick={() => setFilter("PENDING")}>Pending</button>
+      </div>
 
       {/*  Input */}
       <div>
@@ -95,7 +118,7 @@ export default function Home() {
 
       {/*  Task List */}
       <ul>
-        {tasks.map((task) => (
+        {filteredTasks.map((task) => (
           <li key={task.id} onClick={() => toggleTask(task.id)}>
             {task.title}
             <button onClick={(e) => deleteTask(task.id, e)}>Delete</button>
